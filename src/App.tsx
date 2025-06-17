@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+// App.tsx
+import { createAppKit, useAppKitAccount } from "@reown/appkit/react";
+import { BitcoinAdapter } from "@reown/appkit-adapter-bitcoin";
+import { bitcoin, type AppKitNetwork } from "@reown/appkit/networks";
 
+// 1. Get projectId from https://cloud.reown.com
+const projectId = "b56e18d47c72ab683b10814fe9495694";
+
+// 2. Set the networks
+const networks = [bitcoin] as [AppKitNetwork, ...AppKitNetwork[]];
+
+// 3. Set up Bitcoin Adapter
+const bitcoinAdapter = new BitcoinAdapter({
+  projectId,
+});
+
+// 4. Create a metadata object - optional
+const metadata = {
+  name: "AppKit",
+  description: "AppKit Bitcoin Example",
+  url: "https://demo.reown.com", // origin must match your domain & subdomain
+  icons: ["https://avatars.githubusercontent.com/u/179229932"],
+};
+
+// 5. Create modal
+createAppKit({
+  adapters: [bitcoinAdapter],
+  networks,
+  metadata,
+  projectId,
+  features: {
+    analytics: true,
+  },
+});
+
+export default function App() {
+  const { address, allAccounts } = useAppKitAccount();
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main>
+      <appkit-button />
+      <pre>{JSON.stringify({ address, allAccounts }, null, 2)}</pre>
+    </main>
+  );
 }
-
-export default App
